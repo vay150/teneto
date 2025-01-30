@@ -156,7 +156,7 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
     The quicker path is no longer possible.
 
     """
-
+    
     tnet = process_input(tnet, ['C', 'G', 'TN'], 'TN')
 
     # If i, j or it are inputs, process them

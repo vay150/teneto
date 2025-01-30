@@ -5,7 +5,7 @@ import numpy as np
 from .shortest_temporal_path import shortest_temporal_path
 
 
-def temporal_efficiency(tnet=None, paths=None, calc='overtime'):
+def temporal_efficiency(tnet=None, paths=None, calc='overtime', steps_per_t='all', i=None, j=None, it=None, minimise='temporal_distance'):
     r"""
     Returns temporal efficiency estimate. BU networks only.
 
@@ -40,7 +40,7 @@ def temporal_efficiency(tnet=None, paths=None, calc='overtime'):
         raise ValueError('No input.')
     # if shortest paths are not calculated, calculate them
     if tnet is not None:
-        paths = shortest_temporal_path(tnet)
+        paths = shortest_temporal_path(tnet, steps_per_t, i, j, it, minimise)
 
     pathmat = np.zeros([paths[['from', 'to']].max().max(
     )+1, paths[['from', 'to']].max().max()+1, paths[['t_start']].max().max()+1]) * np.nan

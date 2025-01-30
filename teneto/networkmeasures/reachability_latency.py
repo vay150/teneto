@@ -6,7 +6,7 @@ import numpy as np
 from .shortest_temporal_path import shortest_temporal_path
 
 
-def reachability_latency(tnet=None, paths=None, rratio=1, calc='global'):
+def reachability_latency(tnet=None, paths=None, rratio=1, calc='global', steps_per_t='all', i=None, j=None, it=None, minimise='temporal_distance'):
     """
     Reachability latency. This is the r-th longest temporal path.
 
@@ -46,7 +46,7 @@ def reachability_latency(tnet=None, paths=None, rratio=1, calc='global'):
         raise ValueError('No input.')
     # if shortest paths are not calculated, calculate them
     if tnet is not None:
-        paths = shortest_temporal_path(tnet)
+        paths = shortest_temporal_path(tnet, steps_per_t, i, j, it, minimise)
 
     pathmat = np.zeros([paths[['from', 'to']].max().max(
     )+1, paths[['from', 'to']].max().max()+1, paths[['t_start']].max().max()+1]) * np.nan
