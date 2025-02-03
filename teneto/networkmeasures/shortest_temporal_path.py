@@ -3,7 +3,7 @@ import numpy as np
 from teneto.utils import process_input
 import itertools
 import pandas as pd
-
+import time
 
 def seqpath_to_path(pairseq, source):
     # seq must be a path sequence (i.e. possible paths per timepoint)
@@ -156,7 +156,7 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
     The quicker path is no longer possible.
 
     """
-    
+    start_time = time.time()
     tnet = process_input(tnet, ['C', 'G', 'TN'], 'TN')
 
     # If i, j or it are inputs, process them
@@ -250,6 +250,7 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
                             pass
                         else:
                             pathtmp = shortest_path_from_pairseq(a, source)
+                            #print(f"--- Shortest path from pairseq block: {time.time() - start_time:.6f} seconds ---")
                             if pathtmp:
                                 if not isinstance(path, list):
                                     path = pathtmp
@@ -274,4 +275,5 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
 
     paths = pd.DataFrame(data=paths, columns=[
         'from', 'to', 't_start', 'temporal-distance', 'topological-distance', 'path includes'])
+    print(f"--- Shortest temporal path block: {time.time() - start_time:.6f} seconds ---")
     return paths

@@ -185,7 +185,7 @@ class TemporalNetwork:
             # Would be good to see if there was a way to this without going to array.
             self.nettype = 'xu'
             G1 = df_to_array(
-                self.network, self.netshape, self.nettype)
+                self.network, self.netshape, self.nettype) #problem here
             self.nettype = 'xd'
             G2 = df_to_array(
                 self.network, self.netshape, self.nettype)
@@ -235,7 +235,7 @@ class TemporalNetwork:
     def _update_network(self):
         """Helper function that updates the network info"""
         self._calc_netshape()
-        self._set_nettype()
+        self._set_nettype() #problem here
         if self.nettype:
             if self.nettype[1] == 'u':
                 self._drop_duplicate_ij()
@@ -373,6 +373,7 @@ class TemporalNetwork:
             newedges = pd.DataFrame(edgelist, columns=colnames)
             self.network = pd.concat(
                 [self.network, newedges], ignore_index=True, sort=True)
+            #print(f'add_edge: newedges variable {newedges}')
             self._update_network()
 
     def drop_edge(self, edgelist):
