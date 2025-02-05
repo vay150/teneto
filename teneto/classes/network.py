@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from ..utils import df_to_array, gen_nettype, binarize,\
-    df_drop_ij_duplicates, get_network_when, set_diagonal
+    df_drop_ij_duplicates, get_network_when, set_diagonal, process_input
 from .. import networkmeasures
 from .. import generatenetwork
 from .. import plot

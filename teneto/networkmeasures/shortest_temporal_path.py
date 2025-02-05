@@ -1,4 +1,6 @@
-"""Functions to calculate the shortest temporal path."""
+# =============================================================================
+# w3"""Functions to calculate the shortest temporal path."""
+# =============================================================================
 import numpy as np
 from teneto.utils import process_input
 import itertools
@@ -158,7 +160,7 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
     """
     start_time = time.time()
     tnet = process_input(tnet, ['C', 'G', 'TN'], 'TN')
-
+    
     # If i, j or it are inputs, process them
     if i is None:
         source_nodes = np.arange(tnet.netshape[0])
@@ -184,7 +186,7 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
         time_points = it
     else:
         raise ValueError('Unknown t input. Should be None, int or list')
-
+    
     # Two step process.
     # First, get what the network can reach per timepoint.
     # Second, check all possible sequences of what the network can reach for the shortest sequence.
@@ -203,21 +205,33 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
                     pairs = []
                     stop = 0
                     while stop == 0:
+                        print(f'Block 1: ij is {ij}, target is {target} at time {t}')
+                        
+                        
+                        
                         # Only select i if directed, ij if undirected.
                         if tnet.nettype[1] == 'u':
+                            print(f' ij is {ij}, target is {target} at time {t}')
                             network = tnet.get_network_when(ij=list(ij), t=t)
+                            
+                            print(network)
+                            
+                            
+                            
                         elif tnet.nettype[1] == 'd':
                             network = tnet.get_network_when(i=list(ij), t=t)
                         new_nodes = network[['i', 'j']].values
+                        #print(f'New nodes: {new_nodes}')
                         if len(new_nodes) != 0:
                             pairs.append(new_nodes.tolist())
                         new_nodes = new_nodes.flatten()
                         ij = np.hstack([ij, new_nodes])
                         ij = np.unique(ij)
+                        #print(f'2. ij is {ij}, target is {target} at time {t}')
                         if minimise == 'temporal_distance' and target in ij:
                             stop = 1
-                        elif minimise == 'topology' and t == tnet.netshape[1] and target in ij:
-                            stop = 1
+                        #elif minimise == 'topology' and t == tnet.netshape[1] and target in ij:
+                        #    stop = 1
                         elif t == tnet.netshape[1]:
                             t = np.nan
                             ij = [target]
@@ -239,16 +253,38 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
                                 stop = 1
                         lenij = len(ij)
                     # correct t for return
-                    # Only run if one pair is added.
-                    t += 1
+                    # Only run if one pair is added
+                    
+                    
+                    #If no pair is added:
+                        
+                    #t += 1
+                    
                     # part 2 starts here
                     path = np.nan
                     path_length = np.nan
+                    #c = 0
+                    #passed = False
+                    #pair_len = len(list(itertools.product(*reversed(pairs))))
+                    #print(f'pairs_len is {pair_len}')
+                    print(f'Block 2: ij is {ij}, target is {target} at time {t}')
                     for n in itertools.product(*reversed(pairs)):
-                        a = np.array(n).flatten()
-                        if source not in a or target not in a:
+                        #print(f'n: {n}')
+                        #c += 1
+                        a = np.array(n).ravel()
+                        #print(f'a is {a}, source is {source}, target is {target}')
+                        if source not in a or target not in a: #Not A or Not B
+                            #passed = True
                             pass
-                        else:
+                            
+                        else: #source is in a and target is in a, A and B
+                            #passed = False
+                            print(f'a is {a}, source is {source}, target is {target} at time {t}')
+                            
+                            if t == 53:
+                                raise SystemExit
+                            
+                            
                             pathtmp = shortest_path_from_pairseq(a, source)
                             #print(f"--- Shortest path from pairseq block: {time.time() - start_time:.6f} seconds ---")
                             if pathtmp:
@@ -269,10 +305,20 @@ def shortest_temporal_path(tnet, steps_per_t='all', i=None, j=None, it=None, min
                                             pass
                                         else:
                                             path = [path, pathtmp]
+                        del a                    
                     # elif sourcei < 2 and target in a[:2]:
                     #    path_length = 2
+                    
+                    
                     paths.append([source, target, tstart, t-tstart, path_length, path])
-
+                    path_l = len(paths)
+                    temp_dist = paths[path_l-1][3]
+                    print(f'Path {path_l} for Source {source} to Target {target}: {path} with Temporal Distance {temp_dist} starting at time {tstart}')
+                    
+                    t += 1
+                    
+    #path_l = len(paths)            
+    #print(f'Before paths dataframe creation, paths length = {path_l}')
     paths = pd.DataFrame(data=paths, columns=[
         'from', 'to', 't_start', 'temporal-distance', 'topological-distance', 'path includes'])
     print(f"--- Shortest temporal path block: {time.time() - start_time:.6f} seconds ---")
